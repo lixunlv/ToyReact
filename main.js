@@ -1,31 +1,75 @@
 import {Component, ToyReact} from "./ToyReact.js";
+import {calculateWinner} from "./lib.js"
 
-class MyComponent2 extends Component {
+class Square extends Component {
   render() {
     return (
-      <div>aaaa</div>
-    )
+      <button className="square" onClick={this.props.onClick}>
+        {this.props.value}
+      </button>
+    );
   }
 }
 
-class MyComponent extends Component {
+class Board extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      squares: Array(9).fill(null),
+      xIsNext: true,
+    };
+  }
+
+  handleClick(i) {
+    const squares = this.state.squares.slice();
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+      squares: squares,
+      xIsNext: !this.state.xIsNext,
+    });
+  }
+
+  renderSquare(i) {
+    return (
+      <Square
+        value={this.state.squares[i]}
+        onClick={() => this.handleClick(i)} />
+    );
+  }
+
   render() {
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
     return (
       <div>
-        <span>Hello</span>
-        <div>
-          {true}
-          {this.children}
+        <div className="status">{status}</div>
+        <div className="board-row">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
         </div>
       </div>
-    )
+    );
   }
-
 }
 
-let a = <MyComponent name="a" id="ida">
-  <div>aaaa</div><div>bbb</div>
-</MyComponent>
+let a = <Board />
 
 ToyReact.render(
   a,
